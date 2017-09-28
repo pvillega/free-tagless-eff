@@ -1,6 +1,7 @@
 // *****************************************************************************
 // Projects
 // *****************************************************************************
+addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
 
 lazy val `free-tagless-eff` =
   project
@@ -9,6 +10,11 @@ lazy val `free-tagless-eff` =
     .settings(settings)
     .settings(
       libraryDependencies ++= Seq(
+        library.cats("-core"),
+        library.cats("-free"),
+        library.cats("-kernel"),
+        library.cats("-macros"),
+        library.eff,
         library.scalaCheck % Test,
         library.scalaTest  % Test
       )
@@ -23,9 +29,13 @@ lazy val library =
     object Version {
       val scalaCheck = "1.13.5"
       val scalaTest  = "3.0.4"
+      val cats = "1.0.0-MF"
+      val eff = "4.5.0"
     }
     val scalaCheck = "org.scalacheck" %% "scalacheck" % Version.scalaCheck
     val scalaTest  = "org.scalatest"  %% "scalatest"  % Version.scalaTest
+    def cats(stuff: String) = "org.typelevel" %% s"cats$stuff" % Version.cats
+    val eff = "org.atnos" %% "eff" % Version.eff
   }
 
 // *****************************************************************************
@@ -49,7 +59,8 @@ lazy val commonSettings =
       "-deprecation",
       "-language:_",
       "-target:jvm-1.8",
-      "-encoding", "UTF-8"
+      "-encoding", "UTF-8",
+      "-Ypartial-unification"
     ),
     unmanagedSourceDirectories.in(Compile) := Seq(scalaSource.in(Compile).value),
     unmanagedSourceDirectories.in(Test) := Seq(scalaSource.in(Test).value),

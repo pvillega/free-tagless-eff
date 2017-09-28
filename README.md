@@ -1,6 +1,8 @@
-# free-tagless-eff #
+# Free-tagless-eff
 
 Welcome to free-tagless-eff!
+
+This is experimental code to compare Free, Tagless final, and Eff implementations of the same piece of logic. See packages for each pattern.
 
 ## Contribution policy ##
 

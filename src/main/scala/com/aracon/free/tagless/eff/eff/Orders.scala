@@ -47,32 +47,21 @@ object Orders {
   def listStocks[T, R: _orders](): Eff[R, List[Symbol]] =
     Eff.send[Orders, R, List[Symbol]](ListStocks())
 
-  def runOrders[R, A](effect: Eff[R, A])(implicit m: Orders <= R): Eff[m.Out, A] =
-    recurse(effect)(new Recurser[Orders, m.Out, A, A] {
-      def onPure(a: A): A = a
-
-      def onEffect[X](i: Orders[X]): X Either Eff[m.Out, A] = Left {
-        i match {
+  def runOrders[R, U, A](effect: Eff[R, A])(implicit m: Member.Aux[Orders, R, U]): Eff[U, A] =
+    translate(effect)(new Translate[Orders, U] {
+      def apply[X](orders: Orders[X]): Eff[U, X] =
+        orders match {
           case ListStocks() =>
-            List("FB", "TWTR")
+            Eff.pure(List("FB", "TWTR"))
+
           case Buy(stock, amount) =>
-            "ok"
+            Eff.pure("ok")
+
           case Sell(stock, amount) =>
-            "ok"
+            Eff.pure("ok")
         }
-      }
 
-      def onApplicative[X, T[_]: Traverse](ms: T[Orders[X]]): T[X] Either Orders[T[X]] =
-        Left(ms.map {
-          case ListStocks() =>
-            List("FB", "TWTR")
-          case Buy(stock, amount) =>
-            "ok"
-          case Sell(stock, amount) =>
-            "ok"
-        })
-
-    })(m)
+    })
 }
 
 object Logger {
